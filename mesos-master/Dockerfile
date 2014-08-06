@@ -5,7 +5,7 @@ FROM garland/mesosphere-docker-base-image
 RUN sudo apt-get -y install zookeeperd
 RUN echo 1 | sudo dd of=/var/lib/zookeeper/myid
 
-# Install mesos
+# Install mesos.
 RUN sudo apt-get -y install mesos
 RUN sudo mkdir -p /etc/mesos-master
 #RUN echo in_memory | sudo dd of=/etc/mesos-master/registry
