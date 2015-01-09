@@ -1,9 +1,61 @@
 mesosphere-docker
 =================
 
-This project is trying to build a fault tolerant and high availability version of what is described in [http://mesosphere.io/learn/](Mesosphere.io Learn Docs) instead of one VM running all of the services.
+This project builds a fault tolerant and high availability version of what is described in [http://mesosphere.io/learn/](Mesosphere.io Learn Docs) instead of one VM running all of the services.
 
+# Making sure everything works on one node
 
-docker run -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper
+1. Export out the ZooKeepers IP
 
+         ZOOKEEPER_1=10.11.31.7
 
+1. Start Zookeeper
+
+          docker run -d \
+          -p 2181:2181 \
+          -p 2888:2888 \
+          -p 3888:3888 \
+          garland/zookeeper:3.4.6
+
+1. Start Meso Master
+
+          docker run --net="host" \
+          -p 5050:5050 \
+          -e "MESOS_HOSTNAME=${ZOOKEEPER_1}" \
+          -e "MESOS_IP=${ZOOKEEPER_1}" \
+          -e "MESOS_ZK=zk://${ZOOKEEPER_1}:2181/mesos" \
+          -e "MESOS_PORT=5050" \
+          -e "MESOS_LOG_DIR=/var/log/mesos" \
+          -e "MESOS_QUORUM=1" \
+          -e "MESOS_REGISTRY=in_memory" \
+          -e "MESOS_WORK_DIR=/var/lib/mesos" \
+          -d \
+          garland/mesosphere-docker-mesos-master
+
+1. Goto the Meso's Web page
+
+         http://localhost:5050
+
+         ssh -F ssh.config -L 5050:${ZOOKEEPER_1}:5050 core@${ZOOKEEPER_1}
+
+1. Start Marathon
+
+         docker run \
+         -d \
+         -p 8080:8080 \
+         garland/mesosphere-docker-marathon --master zk://${ZOOKEEPER_1}:2181/mesos --zk zk://${ZOOKEEPER_1}:2181/marathon
+
+1. Goto the Marathon's Web page
+
+         http://localhost:8080
+
+         ssh -F ssh.config -L 5050:${ZOOKEEPER_1}:5050 -L 8080:${ZOOKEEPER_1}:8080 core@${ZOOKEEPER_1}
+
+1. Start Meso Slave in a container
+
+         docker run -d \
+         --entrypoint="mesos-slave" \
+         -e "MESOS_MASTER=zk://${ZOOKEEPER_1}:2181/mesos" \
+         -e "MESOS_LOG_DIR=/var/log/mesos" \
+         -e "MESOS_LOGGING_LEVEL=INFO" \
+         garland/mesosphere-docker-mesos-master:latest
