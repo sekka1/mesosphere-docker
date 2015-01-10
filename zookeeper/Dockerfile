@@ -13,11 +13,13 @@ RUN wget -q -O - http://apache.mirrors.pair.com/zookeeper/zookeeper-3.4.6/zookee
 
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 
+ADD ./run.sh /opt/run.sh
+RUN chmod 777 /opt/run.sh
+
 EXPOSE 2181 2888 3888
 
 WORKDIR /opt/zookeeper
 
 VOLUME ["/opt/zookeeper/conf", "/tmp/zookeeper"]
 
-ENTRYPOINT ["/opt/zookeeper/bin/zkServer.sh"]
-CMD ["start-foreground"]
+CMD ["/opt/run.sh"]
