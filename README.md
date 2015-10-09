@@ -16,9 +16,9 @@ Running through these steps on a single node will turn up a fully functional Mes
 
 You then can goto the Marathon's web page and submit a job.
 
-1. Export out the local host's IP
+1. Export out the docker machine's IP. Here we are running containers on `default` machine.
 
-         HOST_IP=10.11.31.7
+         HOST_IP=$(docker-machine env default)
 
 1. Start Zookeeper
 
