@@ -1,7 +1,7 @@
 mesosphere-docker
 =================
 
-This project builds a fault tolerant and high availability Mesos Cluster using Docker containers by turning this set of instructions [http://mesosphere.com/docs/getting-started/datacenter/install/](Mesosphere.io - Setting up a Mesosphere Cluster) into containers.
+This project builds a fault tolerant and high availability Mesos Cluster using Docker containers by turning this set of instructions [Mesosphere.io - Setting up a Mesosphere Cluster](http://mesosphere.com/docs/getting-started/datacenter/install/) into containers.
 
 This lets you launch a fault tolerant multi node cluster with about 8 Docker commands.
 
